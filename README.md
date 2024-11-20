@@ -118,42 +118,42 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build
 This file orchestrates the backend and database services:
 
 ```yaml
-version: '3.8'
+version: "1.0"
 
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: nestjs-backend
+    build: ./backend
+    container_name: turbbbites-backend
     env_file:
       - ./backend/.env.backend
+    environment:
+      - DB_HOST=database
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
     ports:
       - "3000:3000"
+    volumes:
+      - ./backend:/src/app
     depends_on:
       - database
-    networks:
-      - app-network
 
   database:
     image: postgres:15
-    container_name: postgres-db
+    container_name: turbbbites-db-container
     env_file:
       - ./database/.env.database
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5432:5432"
-    networks:
-      - app-network
-
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./database/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
 volumes:
-  postgres-data:
-
-networks:
-  app-network:
-    driver: bridge
+  db_data:
 ```
 
 ### 2. Dockerfile for Backend
@@ -181,7 +181,7 @@ RUN npm run build
 EXPOSE 3000
 
 # Command to run the application
-CMD ["node", "dist/main"]
+CMD ["npm", "run", "start:dev"]
 ```
 
 ### 3. `.dockerignore` for Backend
@@ -191,7 +191,10 @@ The `.dockerignore` file in the `backend/` directory excludes unnecessary files 
 ```bash
 node_modules
 dist
-.env.*
+*.log
+*.md
+.git
+.env.database
 ```
 
 
