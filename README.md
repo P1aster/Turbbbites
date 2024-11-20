@@ -20,7 +20,7 @@ project-root/
 ├── database/ # PostgreSQL database setup
 │ ├── Dockerfile # (Optional) Dockerfile for custom Postgres configuration
 │ ├── .env.database # Environment variables for the database
-│ └── init.sql # SQL file to initialize the database (if needed)
+│ └── initdb.sql # SQL file to initialize the database (if needed)
 │
 ├── docker-compose.yml # Single Docker Compose file for backend and database
 └── README.md # This documentation
