@@ -1,4 +1,4 @@
-Monorepo: NestJS Backend + PostgreSQL (Dockerized)
+# Turbbbites Monorepo: NestJS Backend + PostgreSQL (Dockerized) 
 This repository contains a monorepo for a NestJS backend and a PostgreSQL database. The project is fully dockerized, using separate containers for the backend and database, and can be easily managed with a single docker-compose.yml file.
 
 📂 Project Structure
