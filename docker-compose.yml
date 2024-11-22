@@ -1,28 +1,9 @@
-version: "1.0"
-
 services:
-  backend:
-    build: ./backend
-    container_name: turbbbites-backend
-    env_file:
-      - ./backend/.env.backend
-    environment:
-      - DB_HOST=database
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./backend:/src/app
-    depends_on:
-      - database
-
   database:
-    image: postgres:15
+    image: postgres:latest
     container_name: turbbbites-db-container
     env_file:
-      - ./database/.env.database
+      - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
