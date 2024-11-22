@@ -1,0 +1,18 @@
+-- ======================================================
+-- Function for adding a special hours
+-- ======================================================
+CREATE OR REPLACE PROCEDURE insert_to_business_hours(
+    new_restaurantid INT,
+    new_daydate DATE,
+    new_isclosed BOOLEAN,
+    new_openingtime TIME DEFAULT NULL,
+    new_closingtime TIME DEFAULT NULL
+)
+    LANGUAGE plpgsql AS $$
+BEGIN
+    INSERT INTO specialhours (
+        restaurantid, daydate, opentime, closetime, isclosed
+    )
+    VALUES (new_restaurantid, new_daydate, new_openingtime, new_closingtime, new_isclosed);
+END;
+$$;

@@ -1,7 +1,5 @@
--- Create a custom schema
-CREATE SCHEMA IF NOT EXISTS turbbbites;
--- Set the search path to the new schema
-SET search_path TO turbbbites;
+-- Optional: Set search path to public
+-- SET search_path TO public;
 
 CREATE TABLE IF NOT EXISTS Users (
                                      id           SERIAL PRIMARY KEY,
@@ -16,7 +14,7 @@ CREATE TABLE IF NOT EXISTS Users (
 CREATE TABLE IF NOT EXISTS BusinessHours (
                                              id          SERIAL PRIMARY KEY,
                                              RestaurantId int4 NOT NULL,
-                                             dayOfWeek    varchar(20) NOT NULL,
+                                             dayOfWeek    int4 NOT NULL,
                                              openTime     time NULL DEFAULT NULL,
                                              closeTime    time NULL DEFAULT NULL,
                                              isClosed     bool DEFAULT FALSE NOT NULL

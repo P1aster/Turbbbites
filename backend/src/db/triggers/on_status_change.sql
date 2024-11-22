@@ -10,6 +10,6 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER update_orders_timestamp
     AFTER UPDATE
-    ON turbbbites.orders
+    ON orders
     FOR EACH ROW
 EXECUTE FUNCTION on_status_change();
