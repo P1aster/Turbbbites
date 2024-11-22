@@ -2,21 +2,21 @@
 -- Procedure to update user data
 -- ======================================================
 CREATE OR REPLACE PROCEDURE update_user(
-    user_id INT,
-    new_fullname VARCHAR(50) DEFAULT NULL,
-    new_email VARCHAR(50) DEFAULT NULL,
-    new_password VARCHAR(50) DEFAULT NULL,
-    new_role INT DEFAULT NULL,
-    new_status VARCHAR(10) DEFAULT NULL
+    _id INT,
+    _fullname VARCHAR(50) DEFAULT NULL,
+    _email VARCHAR(50) DEFAULT NULL,
+    _password VARCHAR(50) DEFAULT NULL,
+    _role INT DEFAULT NULL,
+    _status VARCHAR(10) DEFAULT NULL
 )
 LANGUAGE plpgsql AS $$
 BEGIN
     UPDATE Users
-    SET fullname = COALESCE(new_fullname, fullname),
-        email = COALESCE(new_email, email),
-        password = COALESCE(new_password, password),
-        role = COALESCE(new_role, role),
-        status = COALESCE(new_status, status)
-    WHERE id = user_id;
+    SET fullname = COALESCE(_fullname, fullname),
+        email = COALESCE(_email, email),
+        password = COALESCE(_password, password),
+        role = COALESCE(_role, role),
+        status = COALESCE(_status, status)
+    WHERE id = _id;
 END;
 $$;
