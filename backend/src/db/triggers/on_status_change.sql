@@ -8,7 +8,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_orders_timestamp
+CREATE OR REPLACE TRIGGER update_orders_timestamp
     AFTER UPDATE
     ON turbbbites.orders
     FOR EACH ROW
