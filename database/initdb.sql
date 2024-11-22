@@ -39,13 +39,13 @@ CREATE TABLE IF NOT EXISTS Dishes (
 );
 
 CREATE TABLE IF NOT EXISTS DishIngredients (
-                                               ProductId SERIAL PRIMARY KEY,
+                                               ProductId  int4 NOT NULL,
                                                DishId    int4 NOT NULL,
                                                amount    numeric(18, 6) NOT NULL CHECK(amount > 0)
 );
 
 CREATE TABLE IF NOT EXISTS OrderItem (
-                                         OrderId  SERIAL PRIMARY KEY,
+                                         OrderId   int4 NOT NULL,
                                          DishId   int4 NOT NULL,
                                          quantity int4 NOT NULL CHECK(quantity > 0)
 );
