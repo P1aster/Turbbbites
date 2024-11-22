@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { Pool } from 'pg';
 import * as fs from 'fs';
 import * as path from 'path';
 
 @Injectable()
 export class DbService {
+  constructor(@Inject('DATABASE_CONNECTION') private readonly pool: Pool) {}
+
   loadSQL(fileName: string): string {
     const filePath = path.join(__dirname, '..', 'sql', fileName);
     if (!fs.existsSync(filePath)) {
