@@ -5,13 +5,13 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DB}
     ports:
-      - "5433:5432"
+      - '5433:5432'
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./database/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+      # - ./database/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
 volumes:
   db_data:
