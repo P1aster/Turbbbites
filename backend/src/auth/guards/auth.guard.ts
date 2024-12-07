@@ -2,7 +2,6 @@ import { IS_PRIVATE_KEY } from '@/decorators/private.decorator';
 import { IS_PUBLIC_KEY } from '@/decorators/public.decorator';
 import { ROLE_KEY } from '@/decorators/role.decorator';
 import { UserRole } from '@/models/user/entities/user.entity';
-import { UserService } from '@/models/user/user.service';
 import {
   CanActivate,
   ExecutionContext,
@@ -12,19 +11,19 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
+import { UserSessionI } from 'types/userSession';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private jwtService: JwtService,
-    private userService: UserService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const _isPrivate = this.isPrivate(context);
     const _isPublic = this.isPublic(context);
-    const roles = this.getRoles(context);
+    const role = this.getRole(context);
 
     if (!_isPrivate && !_isPublic) {
       throw new Error('Route is missing @Public() or @Private() decorator');
@@ -38,36 +37,38 @@ export class AuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException({
-        title: 'Unauthorized',
-        message: 'Token not found',
+        error: 'Unauthorized',
+        message: ['Token not found'],
       });
+    }
+
+    if (!role) {
+      return true;
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const payload = await this.jwtService.verifyAsync<UserSessionI>(token, {
         secret: process.env.JWT_SECRET,
       });
 
-      const user = await this.userService.findOne(payload.sub);
-      request['user'] = { ...user, ...payload };
-
-      if (!roles) {
-        return true;
-      }
-
-      if (roles && !roles.some((role) => request['user'].role === role)) {
+      if (!this.isRoleHigher(payload.role, role)) {
         throw new ForbiddenException({
-          title: 'Forbidden',
-          message: 'You do not have the necessary permissions',
+          error: 'Forbidden',
+          message: ['You do not have the necessary permissions'],
         });
       }
+
       return true;
     } catch {
       throw new UnauthorizedException({
-        title: 'Unauthorized',
-        message: 'Invalid token',
+        error: 'Unauthorized',
+        message: ['Invalid token'],
       });
     }
+  }
+
+  private isRoleHigher(role: number, requiredRole: number) {
+    return role >= requiredRole;
   }
 
   private extractTokenFromHeader(request): string | undefined {
@@ -88,8 +89,8 @@ export class AuthGuard implements CanActivate {
     ]);
   }
 
-  private getRoles(context: ExecutionContext) {
-    return this.reflector.getAllAndOverride<UserRole[]>(ROLE_KEY, [
+  private getRole(context: ExecutionContext): UserRole | null {
+    return this.reflector.getAllAndOverride<UserRole>(ROLE_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);

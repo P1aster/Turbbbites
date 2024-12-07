@@ -24,8 +24,8 @@ export class ProductCategoryService {
     });
     if (productExists) {
       throw new ConflictException({
-        title: 'Product category already exists',
-        message: `Product category with name "${name}" already exists`,
+        error: 'Product category already exists',
+        message: [`Product category with name "${name}" already exists`],
       });
     }
 
@@ -37,8 +37,8 @@ export class ProductCategoryService {
   findOne(id: number) {
     if (!id) {
       throw new BadRequestException({
-        title: 'Obligatory Parameter Missing',
-        message: 'No id provided in request params',
+        error: 'Obligatory Parameter Missing',
+        message: ['No id provided in request params'],
       });
     }
 
@@ -48,8 +48,8 @@ export class ProductCategoryService {
 
     if (!productCategory) {
       throw new NotFoundException({
-        title: 'Product category not found',
-        message: `Product category with id "${id}" not found`,
+        error: 'Product category not found',
+        message: [`Product category with id "${id}" not found`],
       });
     }
     return productCategory;
@@ -64,8 +64,8 @@ export class ProductCategoryService {
 
     if (!id) {
       throw new BadRequestException({
-        title: 'Obligatory Parameter Missing',
-        message: 'No id provided in request params',
+        error: 'Obligatory Parameter Missing',
+        message: ['No id provided in request params'],
       });
     }
 
@@ -75,8 +75,8 @@ export class ProductCategoryService {
 
     if (!productCategory) {
       throw new NotFoundException({
-        title: 'Product category not found',
-        message: `Product category with id "${id}" not found`,
+        error: 'Product category not found',
+        message: [`Product category with id "${id}" not found`],
       });
     }
     Object.assign(productCategory, body);
@@ -88,8 +88,8 @@ export class ProductCategoryService {
   async remove(id: number) {
     if (!id) {
       throw new BadRequestException({
-        title: 'Obligatory Parameter Missing',
-        message: 'No id provided in request params',
+        error: 'Obligatory Parameter Missing',
+        message: ['No id provided in request params'],
       });
     }
 
@@ -99,8 +99,8 @@ export class ProductCategoryService {
 
     if (!product) {
       throw new NotFoundException({
-        title: 'Product category not found',
-        message: `Product category with id "${id}" not found`,
+        error: 'Product category not found',
+        message: [`Product category with id "${id}" not found`],
       });
     }
 

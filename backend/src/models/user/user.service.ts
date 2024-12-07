@@ -1,9 +1,14 @@
 import { CreateUserDto } from '@/models/user/dto/create-user.dto';
 import { UpdateUserDto } from '@/models/user/dto/update-user.dto';
 import { User, UserRole, UserStatus } from '@/models/user/entities/user.entity';
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UserSessionI } from 'types/userSession';
 
 @Injectable()
 export class UserService {
@@ -12,26 +17,55 @@ export class UserService {
   ) {}
 
   async onModuleInit() {
-    const existingAdmin = await this.userRepository.findOne({
+    const existingHeadAdmin = await this.userRepository.findOne({
       where: { email: 'root@root.com' },
     });
 
-    if (!existingAdmin) {
-      const adminUser = this.userRepository.create({
+    if (!existingHeadAdmin) {
+      const headAdminUser = this.userRepository.create({
         fullname: 'root',
-        role: UserRole.ADMIN,
+        role: UserRole.HEAD_ADMIN,
         status: UserStatus.ACTIVE,
         email: 'root@root.com',
-        password: '6182',
+        password: 'Password6182',
       });
 
-      await this.userRepository.save(adminUser);
+      await this.userRepository.save(headAdminUser);
       console.info('Default admin user created.');
     }
   }
 
-  create(body: CreateUserDto) {
-    return this.userRepository.save(body);
+  async create(body: CreateUserDto, userSession: UserSessionI | null) {
+    const { email, role } = body;
+    const exists = await this.userRepository.findOne({
+      where: { email: email },
+    });
+
+    if (exists) {
+      throw new ConflictException({
+        error: 'User already exists',
+        message: [`User with email "${email}" already exists`],
+      });
+    }
+
+    if (userSession !== null && role && userSession.role <= role) {
+      throw new UnauthorizedException({
+        error: 'Insufficient permissions for this operation',
+        message: [
+          `You need to be at least a "${role}" to perform this operation`,
+        ],
+      });
+    } else if (role && role > UserRole.CLIENT) {
+      throw new UnauthorizedException({
+        error: 'Operation requires authentication',
+        message: ['You need to be authenticated to perform this operation'],
+      });
+    }
+
+    const userEntity = await this.userRepository.create(body);
+    await this.userRepository.save(userEntity);
+    const { password: _, ...user } = userEntity;
+    return user;
   }
 
   findAll() {

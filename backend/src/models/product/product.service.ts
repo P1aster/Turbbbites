@@ -25,8 +25,8 @@ export class ProductService {
     });
     if (productExists) {
       throw new ConflictException({
-        title: 'Product already exists',
-        message: `Product with name "${name}" already exists`,
+        error: 'Product already exists',
+        message: [`Product with name "${name}" already exists`],
       });
     }
 
@@ -42,8 +42,8 @@ export class ProductService {
   async findOne(id: number) {
     if (!id) {
       throw new BadRequestException({
-        title: 'Obligatory Parameter Missing',
-        message: 'No id provided in request params',
+        error: 'Obligatory Parameter Missing',
+        message: ['No id provided in request params'],
       });
     }
 
@@ -51,8 +51,8 @@ export class ProductService {
 
     if (!product) {
       throw new NotFoundException({
-        title: 'Product not found',
-        message: `Product with id "${id}" not found`,
+        error: 'Product not found',
+        message: [`Product with id "${id}" not found`],
       });
     }
     return product;
@@ -63,8 +63,8 @@ export class ProductService {
 
     if (!id) {
       throw new BadRequestException({
-        title: 'Obligatory Parameter Missing',
-        message: 'No id provided in request params',
+        error: 'Obligatory Parameter Missing',
+        message: ['No id provided in request params'],
       });
     }
 
@@ -72,8 +72,8 @@ export class ProductService {
 
     if (!product) {
       throw new NotFoundException({
-        title: 'Product not found',
-        message: `Product with id "${id}" not found`,
+        error: 'Product not found',
+        message: [`Product with id "${id}" not found`],
       });
     }
 
@@ -82,8 +82,10 @@ export class ProductService {
         await this.productCategoryService.findOne(productCategoryId);
       if (!productCategory) {
         throw new NotFoundException({
-          title: 'Product category do not exists',
-          message: `Given product category with id "${productCategoryId}" do not exists`,
+          error: 'Product category do not exists',
+          message: [
+            `Given product category with id "${productCategoryId}" do not exists`,
+          ],
         });
       }
     }
@@ -97,8 +99,8 @@ export class ProductService {
   async remove(id: number) {
     if (!id) {
       throw new BadRequestException({
-        title: 'Obligatory Parameter Missing',
-        message: 'No id provided in request params',
+        error: 'Obligatory Parameter Missing',
+        message: ['No id provided in request params'],
       });
     }
 
@@ -106,8 +108,8 @@ export class ProductService {
 
     if (!product) {
       throw new NotFoundException({
-        title: 'Product not found',
-        message: `Product with id "${id}" not found`,
+        error: 'Product not found',
+        message: [`Product with id "${id}" not found`],
       });
     }
 

@@ -30,14 +30,14 @@ export class ProductCategoryController {
   }
 
   @Private()
-  @Role(UserRole.ADMIN, UserRole.MANAGER, UserRole.WORKER)
+  @Role(UserRole.WORKER)
   @Get()
   findAll() {
     return this.productCategoryService.findAll();
   }
 
   @Private()
-  @Role(UserRole.ADMIN, UserRole.MANAGER, UserRole.WORKER)
+  @Role(UserRole.WORKER)
   @Get(':id')
   findOne(@Param('id') id: number) {
     return this.productCategoryService.findOne(id);

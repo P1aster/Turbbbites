@@ -12,10 +12,11 @@ import {
 } from 'typeorm';
 
 export enum UserRole {
-  ADMIN = 1,
+  HEAD_ADMIN = 4,
+  ADMIN = 3,
   MANAGER = 2,
-  WORKER = 3,
-  GUEST = 0,
+  WORKER = 1,
+  CLIENT = 0,
 }
 
 export enum UserStatus {
@@ -37,7 +38,7 @@ export class User {
   @Column({ length: 60 })
   password: string;
 
-  @Column({ type: 'int4', default: UserRole.GUEST })
+  @Column({ type: 'int4', default: UserRole.CLIENT })
   role: number;
 
   @Column({ length: 10, default: UserStatus.ACTIVE })

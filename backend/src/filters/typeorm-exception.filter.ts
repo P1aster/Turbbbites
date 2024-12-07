@@ -12,9 +12,9 @@ export class TypeOrmExceptionFilter implements ExceptionFilter {
     this.logger.error('TypeORM Error:', exception.message);
 
     response.status(status).json({
+      error: 'Database Error',
       statusCode: status,
-      message: 'Database error occurred',
-      error: exception.message,
+      message: [exception.message],
     });
   }
 }

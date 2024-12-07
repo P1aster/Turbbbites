@@ -29,14 +29,14 @@ export class ProductController {
   }
 
   @Private()
-  @Role(UserRole.ADMIN, UserRole.MANAGER, UserRole.WORKER)
+  @Role(UserRole.WORKER)
   @Get()
   findAll() {
     return this.productService.findAll();
   }
 
   @Private()
-  @Role(UserRole.ADMIN, UserRole.MANAGER, UserRole.WORKER)
+  @Role(UserRole.WORKER)
   @Get(':id')
   findOne(@Param(':id', ParseIntPipe) id: number) {
     return this.productService.findOne(id);

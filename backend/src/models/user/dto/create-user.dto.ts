@@ -1,16 +1,19 @@
 import { UserRole, UserStatus } from '@/models/user/entities/user.entity';
-import { IsEnum, IsInt, Length } from 'class-validator';
+import { IsEmail, IsEnum, IsInt, IsOptional, Length } from 'class-validator';
 export class CreateUserDto {
   @Length(1, 50)
-  name: string;
-  @Length(1, 50)
+  fullname: string;
+  @IsEmail()
   email: string;
   @Length(8, 50)
   password: string;
+  @IsOptional()
   @IsEnum(UserRole)
-  role: UserRole;
+  role?: UserRole;
+  @IsOptional()
   @IsEnum(UserStatus)
-  status: UserStatus;
+  status?: UserStatus;
+  @IsOptional()
   @IsInt()
-  restaurantId: number;
+  restaurantId?: number;
 }

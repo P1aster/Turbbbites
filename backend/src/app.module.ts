@@ -16,9 +16,9 @@ import { RestaurantStockModule } from '@/models/restaurant-stock/restaurant-stoc
 import { RestaurantModule } from '@/models/restaurant/restaurant.module';
 import { SpecialHoursModule } from '@/models/special-hours/special-hours.module';
 import { UserModule } from '@/models/user/user.module';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { DataSource } from 'typeorm';
+import { JwtAuthMiddleware } from './middleware/auth.middleware';
 
 @Module({
   imports: [
@@ -49,5 +49,7 @@ import { DataSource } from 'typeorm';
   ],
 })
 export class AppModule {
-  constructor(private dataSource: DataSource) {}
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtAuthMiddleware).forRoutes('*');
+  }
 }

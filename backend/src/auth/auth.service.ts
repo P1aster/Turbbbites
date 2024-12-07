@@ -17,24 +17,24 @@ export class AuthService {
     const { email, password } = data;
 
     if (!email || !password) {
-      return new UnauthorizedException({
-        title: 'Invalid credentials',
-        message: 'Email and password are required',
+      throw new UnauthorizedException({
+        error: 'Invalid credentials',
+        message: ['Email and password are required'],
       });
     }
 
     const user = await this.validateUser(email, password);
     if (!user) {
-      return new UnauthorizedException({
-        title: 'Invalid credentials',
-        message: 'Email or password is incorrect',
+      throw new UnauthorizedException({
+        error: 'Invalid credentials',
+        message: ['Email or password is incorrect'],
       });
     }
 
     if (user.status === UserStatus.INACTIVE) {
-      return new UnauthorizedException({
-        title: 'Invalid credentials',
-        message: 'User is inactive',
+      throw new UnauthorizedException({
+        error: 'Invalid credentials',
+        message: ['User is inactive'],
       });
     }
 
@@ -52,8 +52,10 @@ export class AuthService {
   }
 
   async signinUser(user: User) {
-    const payload = { sub: user.id, email: user.email };
-    const token = await this.jwtService.signAsync(payload);
+    const token = await this.jwtService.signAsync({
+      userId: user.id,
+      role: user.role,
+    });
     return { token, ...user };
   }
 }
