@@ -33,7 +33,7 @@ export class UserService {
       });
 
       await this.userRepository.save(headAdminUser);
-      console.info('Default admin user created.');
+      console.info('Default admin user created.', headAdminUser);
     }
   }
 

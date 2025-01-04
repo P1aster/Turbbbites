@@ -12,7 +12,7 @@ import { AuthService } from './auth.service';
     JwtModule.register({
       global: true, // 💡 This is important to make the JwtService available globally
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1m' }, // 💡 1 week expiration
+      signOptions: { expiresIn: '1m' }, // 💡 1 min expiration
     }),
   ],
   controllers: [AuthController],

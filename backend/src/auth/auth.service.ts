@@ -15,7 +15,6 @@ export class AuthService {
 
   async login(data: LoginAuthDto) {
     const { email, password } = data;
-
     if (!email || !password) {
       throw new UnauthorizedException({
         error: 'Invalid credentials',
