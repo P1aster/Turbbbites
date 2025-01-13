@@ -1,5 +1,5 @@
-# Turbbbites Monorepo: NestJS Backend + PostgreSQL (Dockerized) 
-This repository contains a monorepo for a NestJS backend and a PostgreSQL database. The project is fully dockerized, using separate containers for the backend and database, and can be easily managed with a single `docker-compose.yml` file.
+# Turbbbites: NestJS Backend + PostgreSQL (Dockerized) 
+This repository contains a monorepo for a NestJS backend and a PostgreSQL database. The project is partially dockerized.
 
 <br/><br/>
 
@@ -75,17 +75,6 @@ DB_NAME=app_db
 PORT=3000
 ```
 
-Create the `.env.database` file in the `database/` directory:
-
-```bash
-touch .env.database
-```
-Add the following variables (customize as needed):
-```env
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres_password
-POSTGRES_DB=app_db
-```
 ### 3. Build and Run Containers
 
 Use Docker Compose to build and run the containers.
@@ -121,102 +110,22 @@ This file orchestrates the backend and database services:
 version: "1.0"
 
 services:
-  backend:
-    build: ./backend
-    container_name: turbbbites-backend
-    env_file:
-      - ./backend/.env.backend
-    environment:
-      - DB_HOST=database
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./backend:/src/app
-    depends_on:
-      - database
-
   database:
-    image: postgres:15
+    image: postgres:latest
     container_name: turbbbites-db-container
     env_file:
-      - ./database/.env.database
+      - .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5433:5432"
+      - '5433:5432'
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./database/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
 volumes:
   db_data:
-```
 
-### 2. Dockerfile for Backend
-
-```dockerfile
-# Use the official Node.js image as the base image
-FROM node:20
-
-# Set the working directory inside the container
-WORKDIR /usr/src/app
-
-# Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
-
-# Install the application dependencies
-RUN npm install
-
-# Copy the rest of the application files
-COPY . .
-
-# Build the NestJS application
-RUN npm run build
-
-# Expose the application port
-EXPOSE 3000
-
-# Command to run the application
-CMD ["npm", "run", "start:dev"]
-```
-
-### 3. `.dockerignore` for Backend
-
-The `.dockerignore` file in the `backend/` directory excludes unnecessary files from the Docker image:
-
-```bash
-node_modules
-dist
-*.log
-*.md
-.git
-.env.database
-```
-
-
-## 🛠️ How to Run for Development and Production
-
-* Development Mode: 
-
-```bash
-docker-compose up --build
-```
-This command will:
-
-Build the Docker images based on the `Dockerfile` in the `backend/` folder.
-Create and start containers for both the backend and PostgreSQL database.
-Expose the backend on `http://localhost:3000` and the PostgreSQL database on `localhost:5432`.
-
-* Production Mode:
-
-o deploy the app in production mode, you can create a` docker-compose.prod.yml` file (optional) for production-specific configurations, then run:
-
-```bash
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build
 ```
 
 
