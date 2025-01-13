@@ -1,7 +1,11 @@
-import { IsString, Length } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class CreateProductCategoryDto {
+  @Transform(({ value }) => {
+    if (value) return value?.trim()?.toLowerCase();
+  })
   @IsString()
-  @Length(3, 50)
+  @IsNotEmpty()
   name: string;
 }

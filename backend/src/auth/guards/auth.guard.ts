@@ -38,11 +38,11 @@ export class AuthGuard implements CanActivate {
     if (!token) {
       throw new UnauthorizedException({
         error: 'Unauthorized',
-        message: ['Token not found'],
+        message: 'Token not found',
       });
     }
 
-    if (!role) {
+    if (role === null) {
       return true;
     }
 
@@ -50,11 +50,10 @@ export class AuthGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync<UserSessionI>(token, {
         secret: process.env.JWT_SECRET,
       });
-
       if (!this.isRoleHigher(payload.role, role)) {
         throw new ForbiddenException({
           error: 'Forbidden',
-          message: ['You do not have the necessary permissions'],
+          message: 'You do not have the necessary permissions',
         });
       }
 
@@ -62,7 +61,7 @@ export class AuthGuard implements CanActivate {
     } catch {
       throw new UnauthorizedException({
         error: 'Unauthorized',
-        message: ['Invalid token'],
+        message: 'Invalid token',
       });
     }
   }

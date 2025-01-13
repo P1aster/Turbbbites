@@ -1,14 +1,32 @@
-import { IsBoolean, IsDate, IsInt, Length } from 'class-validator';
+import {
+  IsBoolean,
+  IsDateString,
+  IsOptional,
+  IsNumber,
+  IsMilitaryTime,
+} from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateSpecialHourDto {
-  @IsInt()
+  @IsNumber()
   restaurantId: number;
-  @IsDate()
-  dayDate: Date;
-  @Length(5, 5)
+
+  @Transform(({ value }) => {
+    if (value) return new Date(value);
+  })
+  @IsDateString()
+  @IsOptional()
+  dayDate: string;
+
+  @IsMilitaryTime()
+  @IsOptional()
   openTime?: string;
-  @Length(5, 5)
+
+  @IsMilitaryTime()
+  @IsOptional()
   closeTime?: string;
+
   @IsBoolean()
-  isClosed: boolean;
+  @IsOptional()
+  isClosed?: boolean;
 }

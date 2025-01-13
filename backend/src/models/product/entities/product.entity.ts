@@ -27,11 +27,13 @@ export class Product {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
     nullable: true,
+    eager: true,
   })
   productCategory: ProductCategory | null;
 
   @OneToMany(() => DishIngredient, (dishIngredient) => dishIngredient.product, {
-    cascade: true,
+    onDelete: 'RESTRICT',
+    onUpdate: 'CASCADE',
   })
   dishIngredients: DishIngredient[];
 
@@ -39,7 +41,8 @@ export class Product {
     () => RestaurantStock,
     (restaurantStock) => restaurantStock.product,
     {
-      cascade: true,
+      onDelete: 'RESTRICT',
+      onUpdate: 'CASCADE',
     },
   )
   restaurantStocks: RestaurantStock[];

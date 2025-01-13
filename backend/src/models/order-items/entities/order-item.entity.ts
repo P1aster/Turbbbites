@@ -8,23 +8,22 @@ export class OrderItem {
   quantity: number;
 
   @PrimaryColumn()
-  orderId: number; // Foreign key for Dish
+  orderId: number;
 
   @PrimaryColumn()
-  dishId: number; // Foreign key for Product
+  dishId: number;
 
-  @ManyToOne(() => Order, (order) => order.items, {
+  @ManyToOne(() => Order, (order) => order.orderItems, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn({ name: 'orderId' }) // Connects orderId to the primary key of Order
+  @JoinColumn({ name: 'orderId' })
   order: Order;
 
   @ManyToOne(() => Dish, (dish) => dish.orderItems, {
     onDelete: 'RESTRICT',
     onUpdate: 'CASCADE',
-    eager: true,
   })
-  @JoinColumn({ name: 'dishId' }) // Connects dishId to the primary key of Dish
+  @JoinColumn({ name: 'dishId' })
   dish: Dish;
 }

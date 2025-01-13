@@ -11,6 +11,7 @@ import {
   Param,
   Patch,
   Post,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CreateProductCategoryDto } from './dto/create-product-category.dto';
 import { UpdateProductCategoryDto } from './dto/update-product-category.dto';
@@ -25,7 +26,10 @@ export class ProductCategoryController {
   @Private()
   @Role(UserRole.ADMIN)
   @Post()
-  create(@Body() body: CreateProductCategoryDto) {
+  create(
+    @Body()
+    body: CreateProductCategoryDto,
+  ) {
     return this.productCategoryService.create(body);
   }
 
@@ -39,14 +43,17 @@ export class ProductCategoryController {
   @Private()
   @Role(UserRole.WORKER)
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.productCategoryService.findOne(id);
   }
 
   @Private()
   @Role(UserRole.ADMIN)
   @Patch(':id')
-  update(@Param('id') id: number, @Body() body: UpdateProductCategoryDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateProductCategoryDto,
+  ) {
     return this.productCategoryService.update(id, body);
   }
 
@@ -54,7 +61,7 @@ export class ProductCategoryController {
   @Role(UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.productCategoryService.remove(id);
   }
 }

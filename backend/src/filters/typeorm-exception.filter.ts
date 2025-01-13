@@ -14,7 +14,7 @@ export class TypeOrmExceptionFilter implements ExceptionFilter {
     response.status(status).json({
       error: 'Database Error',
       statusCode: status,
-      message: [exception.message],
+      message: exception.message,
     });
   }
 }

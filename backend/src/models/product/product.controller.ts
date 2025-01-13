@@ -38,7 +38,7 @@ export class ProductController {
   @Private()
   @Role(UserRole.WORKER)
   @Get(':id')
-  findOne(@Param(':id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.productService.findOne(id);
   }
 

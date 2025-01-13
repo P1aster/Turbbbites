@@ -15,19 +15,19 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     const exceptionResponse = exception.getResponse();
 
     let error: string = 'Error';
+    let message: string = 'Bad Request';
 
     if (typeof exceptionResponse === 'object' && exceptionResponse) {
-      error = (exceptionResponse as any)['error'] || error;
+      error = exceptionResponse['error'] || error;
+      message = exceptionResponse['message'].toString() || message;
+    } else if (typeof exceptionResponse === 'string') {
+      error = exceptionResponse;
     }
 
-    const validationErrors = Array.isArray(exceptionResponse['message'])
-      ? exceptionResponse['message']
-      : [exceptionResponse['message']];
-
     response.status(statusCode).json({
-      error,
-      statusCode,
-      message: validationErrors,
+      error: error,
+      statusCode: statusCode,
+      message: message,
     });
   }
 }

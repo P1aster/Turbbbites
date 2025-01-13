@@ -1,9 +1,8 @@
 import { DishIngredient } from '@/models/dish-ingredients/entities/dish-ingredient.entity';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateDishIngredientDto } from './dto/create-dish-ingredient.dto';
-import { UpdateDishIngredientDto } from './dto/update-dish-ingredient.dto';
+import { QueryRunner, Repository } from 'typeorm';
+import { Product } from '../product/entities/product.entity';
 
 @Injectable()
 export class DishIngredientsService {
@@ -11,23 +10,35 @@ export class DishIngredientsService {
     @InjectRepository(DishIngredient)
     private dishIngredientsRepository: Repository<DishIngredient>,
   ) {}
-  create(createDishIngredientDto: CreateDishIngredientDto) {
-    return 'This action adds a new dishIngredient';
-  }
 
-  findAll() {
-    return `This action returns all dishIngredients`;
-  }
+  async createIngredients(
+    queryRunner: QueryRunner,
+    dishId: number,
+    products: any[],
+  ) {
+    const dishIngredients: DishIngredient[] = [];
 
-  findOne(id: number) {
-    return `This action returns a #${id} dishIngredient`;
-  }
+    for (const product of products) {
+      const productExists = await queryRunner.manager.findOne(Product, {
+        where: { id: product.id },
+      });
 
-  update(id: number, updateDishIngredientDto: UpdateDishIngredientDto) {
-    return `This action updates a #${id} dishIngredient`;
-  }
+      if (!productExists) {
+        throw new NotFoundException({
+          error: 'Product not found',
+          message: `Product with id "${product.id}" not found`,
+        });
+      }
 
-  remove(id: number) {
-    return `This action removes a #${id} dishIngredient`;
+      dishIngredients.push(
+        queryRunner.manager.create(DishIngredient, {
+          dishId,
+          productId: product.id,
+          amount: product.amount,
+        }),
+      );
+    }
+
+    return await queryRunner.manager.create(DishIngredient, dishIngredients);
   }
 }

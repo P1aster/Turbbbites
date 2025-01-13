@@ -9,5 +9,6 @@ import { DishIngredientsService } from './dish-ingredients.service';
   imports: [TypeOrmModule.forFeature([DishIngredient, Product])],
   controllers: [DishIngredientsController],
   providers: [DishIngredientsService],
+  exports: [DishIngredientsService],
 })
 export class DishIngredientsModule {}

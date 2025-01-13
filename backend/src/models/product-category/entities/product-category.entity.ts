@@ -10,8 +10,8 @@ export class ProductCategory {
   name: string;
 
   @OneToMany(() => Product, (product) => product.productCategory, {
-    cascade: true,
-    eager: true,
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
   })
   products: Product[];
 }

@@ -1,14 +1,34 @@
-import { IsString, Length } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsPostalCode,
+  IsString,
+} from 'class-validator';
 
 export class CreateRestaurantDto {
-  @Length(0, 200)
+  @IsString()
+  @IsOptional()
   description?: string;
+
   @IsString()
+  @IsNotEmpty()
   address: string;
-  @Length(1, 10)
-  postalCode: string;
+
   @IsString()
+  @IsNotEmpty()
+  @IsPostalCode('PL')
+  postalCode: string;
+
+  @Transform(({ value }) => {
+    const lowercased = value.toLowerCase();
+    return lowercased.charAt(0).toUpperCase() + lowercased.slice(1);
+  })
+  @IsString()
+  @IsNotEmpty()
   city: string;
-  @Length(0, 400)
+
+  @IsString()
+  @IsOptional()
   contactInformation?: string;
 }

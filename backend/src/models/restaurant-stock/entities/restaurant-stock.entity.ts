@@ -9,6 +9,7 @@ import {
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
+  AfterUpdate,
 } from 'typeorm';
 
 export enum StockAction {
@@ -19,6 +20,11 @@ export enum StockAction {
 @Entity()
 @Check(`"amount" > 0`)
 export class RestaurantStock {
+  @AfterUpdate()
+  updateModificationDatetime() {
+    this.modificationDatetime = new Date();
+  }
+
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -26,7 +32,7 @@ export class RestaurantStock {
   subId: number;
 
   @Column({ type: 'numeric', precision: 18, scale: 6 })
-  amount: string;
+  amount: number;
 
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   modificationDatetime: Date;
@@ -34,7 +40,7 @@ export class RestaurantStock {
   @Column({ type: 'date', default: null, nullable: true })
   expirationDate: Date;
 
-  @Column({ length: 20 })
+  @Column({ type: 'enum', enum: StockAction, default: StockAction.ADD })
   stockAction: StockAction;
 
   @ManyToOne(() => Product, (product) => product.restaurantStocks, {

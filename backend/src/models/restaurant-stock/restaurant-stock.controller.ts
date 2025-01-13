@@ -1,47 +1,20 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
-import { CreateRestaurantStockDto } from './dto/create-restaurant-stock.dto';
-import { UpdateRestaurantStockDto } from './dto/update-restaurant-stock.dto';
+import { Body, Controller, Post } from '@nestjs/common';
 import { RestaurantStockService } from './restaurant-stock.service';
+import { AppRestaurantStockDto } from './dto/add-restaurant-stock.dto';
+import { Private } from '@/decorators/private.decorator';
+import { Role } from '@/decorators/role.decorator';
+import { UserRole } from '@/models/user/entities/user.entity';
 
-@Controller('restaurant-stock')
+@Controller('restaurantStock')
 export class RestaurantStockController {
   constructor(
     private readonly restaurantStockService: RestaurantStockService,
   ) {}
 
+  @Private()
+  @Role(UserRole.MANAGER)
   @Post()
-  create(@Body() createRestaurantStockDto: CreateRestaurantStockDto) {
-    return this.restaurantStockService.create(createRestaurantStockDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.restaurantStockService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.restaurantStockService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateRestaurantStockDto: UpdateRestaurantStockDto,
-  ) {
-    return this.restaurantStockService.update(+id, updateRestaurantStockDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.restaurantStockService.remove(+id);
+  addProduct(@Body() body: AppRestaurantStockDto) {
+    return this.restaurantStockService.addStockItem(body);
   }
 }

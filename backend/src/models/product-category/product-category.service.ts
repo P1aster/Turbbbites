@@ -6,9 +6,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Equal, Not, Repository } from 'typeorm';
 import { CreateProductCategoryDto } from './dto/create-product-category.dto';
 import { UpdateProductCategoryDto } from './dto/update-product-category.dto';
+import { Assertion } from '../../utils/assertion';
+import { plainToInstance } from 'class-transformer';
 @Injectable()
 export class ProductCategoryService {
   constructor(
@@ -16,6 +18,7 @@ export class ProductCategoryService {
     private productCategoryRepository: Repository<ProductCategory>,
   ) {}
 
+  // Create a new product category
   async create(body: CreateProductCategoryDto) {
     const { name } = body;
 
@@ -25,47 +28,23 @@ export class ProductCategoryService {
     if (productExists) {
       throw new ConflictException({
         error: 'Product category already exists',
-        message: [`Product category with name "${name}" already exists`],
+        message: `Product category with name "${name}" already exists`,
       });
     }
-
-    const productCategory = await this.productCategoryRepository.create(body);
-    await this.productCategoryRepository.save(productCategory);
-    return productCategory;
+    return await this.productCategoryRepository.save(body);
   }
 
-  findOne(id: number) {
-    if (!id) {
-      throw new BadRequestException({
-        error: 'Obligatory Parameter Missing',
-        message: ['No id provided in request params'],
-      });
-    }
-
-    const productCategory = this.productCategoryRepository.findOne({
-      where: { id: id },
-    });
-
-    if (!productCategory) {
-      throw new NotFoundException({
-        error: 'Product category not found',
-        message: [`Product category with id "${id}" not found`],
-      });
-    }
-    return productCategory;
-  }
-
+  // Find all product categories
   findAll() {
     return this.productCategoryRepository.find();
   }
 
-  async update(id: number, body: UpdateProductCategoryDto) {
-    // const { productCategoryId } = data;
-
+  // Find one product category by id
+  async findOne(id: number) {
     if (!id) {
       throw new BadRequestException({
         error: 'Obligatory Parameter Missing',
-        message: ['No id provided in request params'],
+        message: 'No id provided in request params',
       });
     }
 
@@ -76,34 +55,58 @@ export class ProductCategoryService {
     if (!productCategory) {
       throw new NotFoundException({
         error: 'Product category not found',
-        message: [`Product category with id "${id}" not found`],
+        message: `Product category with id "${id}" not found`,
       });
     }
-    Object.assign(productCategory, body);
-
-    await this.productCategoryRepository.update(id, body);
     return productCategory;
   }
 
+  // Update a product category
+  async update(id: number, body: UpdateProductCategoryDto) {
+    const { name } = body;
+    if (!id) {
+      throw new BadRequestException({
+        error: 'Obligatory Parameter Missing',
+        message: 'No id provided in request params',
+      });
+    }
+    const productCategory = await this.findOne(id);
+    const productNameExists = await this.productCategoryRepository.findBy({
+      name: Equal(name),
+      id: Not(id),
+    });
+    if (!Assertion.isEmptyArray(productNameExists)) {
+      throw new ConflictException({
+        error: 'Product category already exists',
+        message: `Product category with name "${name}" already exists`,
+      });
+    }
+
+    const serializedData = plainToInstance(UpdateProductCategoryDto, body, {
+      exposeUnsetFields: false,
+    });
+
+    if (Assertion.isEmptyObject(serializedData)) {
+      throw new BadRequestException({
+        error: 'No data provided',
+        message: 'No data provided to update product category',
+      });
+    }
+
+    await this.productCategoryRepository.update(id, serializedData);
+    return Object.assign(productCategory, serializedData);
+  }
+
+  // Remove a product category
   async remove(id: number) {
     if (!id) {
       throw new BadRequestException({
         error: 'Obligatory Parameter Missing',
-        message: ['No id provided in request params'],
+        message: 'No id provided in request params',
       });
     }
 
-    const product = await this.productCategoryRepository.findOne({
-      where: { id: id },
-    });
-
-    if (!product) {
-      throw new NotFoundException({
-        error: 'Product category not found',
-        message: [`Product category with id "${id}" not found`],
-      });
-    }
-
+    await this.findOne(id);
     await this.productCategoryRepository.delete(id);
   }
 }

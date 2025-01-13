@@ -46,21 +46,19 @@ export class UserService {
     if (exists) {
       throw new ConflictException({
         error: 'User already exists',
-        message: [`User with email "${email}" already exists`],
+        message: `User with email "${email}" already exists`,
       });
     }
 
     if (userSession !== null && role && userSession.role <= role) {
       throw new UnauthorizedException({
         error: 'Insufficient permissions for this operation',
-        message: [
-          `You need to be at least a "${role}" to perform this operation`,
-        ],
+        message: `You need to be at least a "${role}" to perform this operation`,
       });
     } else if (role && role > UserRole.CLIENT) {
       throw new UnauthorizedException({
         error: 'Operation requires authentication',
-        message: ['You need to be authenticated to perform this operation'],
+        message: 'You need to be authenticated to perform this operation',
       });
     }
 
@@ -85,7 +83,7 @@ export class UserService {
     if (!user) {
       throw new NotFoundException({
         error: 'User not found',
-        message: ['User not found'],
+        message: 'User not found',
       });
     }
 
@@ -123,7 +121,7 @@ export class UserService {
     if (!user) {
       throw new NotFoundException({
         error: 'User not found',
-        message: [`User with id "${id}" not found`],
+        message: `User with id "${id}" not found`,
       });
     }
 
@@ -142,21 +140,19 @@ export class UserService {
     if (!userToUpdate) {
       throw new NotFoundException({
         error: 'User not found',
-        message: [`User with id "${id}" not found`],
+        message: `User with id "${id}" not found`,
       });
     } else if (userToUpdate.role >= userSession.role) {
       throw new UnauthorizedException({
         title: 'Unauthorized',
-        message: [
+        message:
           'You do not have the necessary permissions to perform this operation',
-        ],
       });
     } else if (body.role && body.role >= userSession.role) {
       throw new UnauthorizedException({
         title: 'Unauthorized',
-        message: [
+        message:
           'You do not have the necessary permissions to perform this operation',
-        ],
       });
     }
     return await this.userRepository.update({ id }, body);
@@ -168,14 +164,13 @@ export class UserService {
     if (!userToDelete) {
       throw new NotFoundException({
         error: 'User not found',
-        message: [`User with id "${id}" not found`],
+        message: `User with id "${id}" not found`,
       });
     } else if (userToDelete.role >= userSession.role) {
       throw new UnauthorizedException({
         title: 'Unauthorized',
-        message: [
+        message:
           'You do not have the necessary permissions to perform this operation',
-        ],
       });
     }
 

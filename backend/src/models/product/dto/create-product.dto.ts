@@ -1,8 +1,18 @@
-import { IsBoolean, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsNotEmpty,
+} from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateProductDto {
+  @Transform(({ value }) => {
+    if (value) return value?.trim()?.toLowerCase();
+  })
   @IsString()
-  @MinLength(1)
+  @IsNotEmpty()
   name: string;
 
   @IsString()
@@ -12,4 +22,8 @@ export class CreateProductDto {
   @IsBoolean()
   @IsOptional()
   available?: boolean;
+
+  @IsNumber()
+  @IsOptional()
+  productCategoryId?: number;
 }

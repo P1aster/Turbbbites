@@ -2,44 +2,31 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   Param,
-  Patch,
   Post,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CreateSpecialHourDto } from './dto/create-special-hour.dto';
-import { UpdateSpecialHourDto } from './dto/update-special-hour.dto';
 import { SpecialHoursService } from './special-hours.service';
+import { UserRole } from '../user/entities/user.entity';
+import { Private } from '@/decorators/private.decorator';
+import { Role } from '@/decorators/role.decorator';
 
-@Controller('special-hours')
+@Controller('specialHours')
 export class SpecialHoursController {
   constructor(private readonly specialHoursService: SpecialHoursService) {}
 
+  @Private()
+  @Role(UserRole.ADMIN)
   @Post()
-  create(@Body() createSpecialHourDto: CreateSpecialHourDto) {
-    return this.specialHoursService.create(createSpecialHourDto);
+  create(@Body() body: CreateSpecialHourDto) {
+    return this.specialHoursService.create(body);
   }
 
-  @Get()
-  findAll() {
-    return this.specialHoursService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.specialHoursService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateSpecialHourDto: UpdateSpecialHourDto,
-  ) {
-    return this.specialHoursService.update(+id, updateSpecialHourDto);
-  }
-
+  @Private()
+  @Role(UserRole.ADMIN)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.specialHoursService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.specialHoursService.remove(id);
   }
 }

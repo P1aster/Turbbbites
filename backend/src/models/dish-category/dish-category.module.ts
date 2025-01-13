@@ -8,5 +8,6 @@ import { DishCategoryService } from './dish-category.service';
   imports: [TypeOrmModule.forFeature([DishCategory])],
   controllers: [DishCategoryController],
   providers: [DishCategoryService],
+  exports: [DishCategoryService],
 })
 export class DishCategoryModule {}

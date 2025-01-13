@@ -1,6 +1,7 @@
 import { Order } from '@/models/order/entities/order.entity';
 import { Restaurant } from '@/models/restaurant/entities/restaurant.entity';
 import * as bcrypt from 'bcrypt';
+import { Exclude } from 'class-transformer';
 import {
   BeforeInsert,
   Column,
@@ -35,6 +36,7 @@ export class User {
   @Column({ length: 50 })
   email: string;
 
+  @Exclude()
   @Column({ length: 60 })
   password: string;
 

@@ -16,16 +16,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
     let message: string = 'An unexpected error occurred';
 
     if (typeof errorResponse === 'object' && errorResponse) {
-      error = (errorResponse as any)['error'] || error;
-      message = (errorResponse as any)['message'] || message;
-    } else {
-      message = errorResponse as string;
+      error = errorResponse['error'] || error;
+      message = errorResponse['message'] || message;
+    } else if (typeof errorResponse === 'string') {
+      message = errorResponse;
     }
 
     response.status(statusCode).send({
       error,
       statusCode,
-      message: [message],
+      message: message,
     });
   }
 }

@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { UserStatus } from '../models/user/entities/user.entity';
 import { UserService } from '../models/user/user.service';
 import { LoginAuthDto } from './dto/login-auth.dto';
+import { RegisterAuthDto } from './dto/register-auth-dto';
 
 @Injectable()
 export class AuthService {
@@ -13,12 +14,23 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  async validToken(token?: string) {
+    const payload = await this.jwtService.verifyAsync(token, {
+      secret: process.env.JWT_SECRET,
+    });
+    console.log('PAYLOAD', payload, token);
+    if (payload) {
+      return true;
+    }
+    return false;
+  }
+
   async login(data: LoginAuthDto) {
     const { email, password } = data;
     if (!email || !password) {
       throw new UnauthorizedException({
         error: 'Invalid credentials',
-        message: ['Email and password are required'],
+        message: 'Email and password are required',
       });
     }
 
@@ -26,18 +38,18 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException({
         error: 'Invalid credentials',
-        message: ['Email or password is incorrect'],
+        message: 'Email or password is incorrect',
       });
     }
 
     if (user.status === UserStatus.INACTIVE) {
       throw new UnauthorizedException({
         error: 'Invalid credentials',
-        message: ['User is inactive'],
+        message: 'User is inactive',
       });
     }
 
-    return this.signinUser(user);
+    return await this.signinUser(user);
   }
 
   async validateUser(email: string, password: string) {
@@ -56,5 +68,33 @@ export class AuthService {
       role: user.role,
     });
     return { token, ...user };
+  }
+
+  async register(data: RegisterAuthDto) {
+    const { email } = data;
+
+    const user = await this.userService.findOneByEmail(email);
+
+    if (user) {
+      throw new UnauthorizedException({
+        error: 'User already exists',
+        message: `User with email "${email}" already exists`,
+      });
+    }
+
+    const res = await this.userService.create(data, null);
+    if (!res) {
+      throw new UnauthorizedException({
+        error: 'User not created',
+        message: 'User not created',
+      });
+    }
+
+    const token = await this.jwtService.signAsync({
+      userId: res.id,
+      role: res.role,
+    });
+
+    return { token, ...res };
   }
 }

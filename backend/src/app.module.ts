@@ -16,8 +16,8 @@ import { RestaurantStockModule } from '@/models/restaurant-stock/restaurant-stoc
 import { RestaurantModule } from '@/models/restaurant/restaurant.module';
 import { SpecialHoursModule } from '@/models/special-hours/special-hours.module';
 import { UserModule } from '@/models/user/user.module';
-import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
+import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { JwtAuthMiddleware } from './middleware/auth.middleware';
 
 @Module({
@@ -29,7 +29,6 @@ import { JwtAuthMiddleware } from './middleware/auth.middleware';
     BusinessHoursModule,
     SpecialHoursModule,
     RestaurantModule,
-    RestaurantStockModule,
     OrderModule,
     OrderItemsModule,
     DishModule,
@@ -45,6 +44,10 @@ import { JwtAuthMiddleware } from './middleware/auth.middleware';
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
     },
   ],
 })

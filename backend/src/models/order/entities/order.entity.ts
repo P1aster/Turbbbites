@@ -3,8 +3,10 @@ import { RestaurantStock } from '@/models/restaurant-stock/entities/restaurant-s
 import { Restaurant } from '@/models/restaurant/entities/restaurant.entity';
 import { User } from '@/models/user/entities/user.entity';
 import {
+  AfterUpdate,
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -13,17 +15,23 @@ import {
 export enum OrderStatus {
   PENDING = 'pending',
   COMPLETED = 'completed',
+  COLLECTED = 'collected',
   CANCELLED = 'cancelled',
-  IDLE = 'idle',
+  WAITING_PAYMENT = 'waitingPayment',
 }
 
 @Entity()
 export class Order {
+  @AfterUpdate()
+  updateOrderEditedAt() {
+    this.editedAt = new Date();
+  }
+
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'numeric', precision: 12, scale: 4 })
-  totalPrice: string;
+  @Column({ type: 'numeric', precision: 12, scale: 2 })
+  totalPrice: number;
 
   @Column({ length: 20, default: OrderStatus.PENDING })
   status: OrderStatus;
@@ -43,12 +51,14 @@ export class Order {
   @OneToMany(() => OrderItem, (item) => item.order, {
     cascade: true,
   })
-  items: OrderItem[];
+  orderItems: OrderItem[];
 
   @ManyToOne(() => Restaurant, (restaurant) => restaurant.orders, {
     onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
+    nullable: false,
   })
+  @JoinColumn({ name: 'restaurantId' })
   restaurant: Restaurant;
 
   @OneToMany(() => RestaurantStock, (stock) => stock.order, {
